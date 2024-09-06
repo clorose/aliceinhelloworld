@@ -1,4 +1,9 @@
 # Node.js 기반 테크 블로그 & 포트폴리오
+
+## 면책 조항
+
+이 내용은 ai 기반으로 생성되었습니다. 현재 작업 중이며, 내용이 변경될 수 있습니다.
+
 이 프로젝트는 Node.js와 React를 사용하여 구축된 개인 테크 블로그 및 포트폴리오 웹사이트입니다.
 OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다. (respect to Ubuntu)
 제가 사용할 수 있는 기술 스택을 연습, 적용하고, 개인 블로그 및 포트폴리오를 구축하는 것을 목표로 합니다.
@@ -6,6 +11,7 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
 또 이 프로젝트를 사용하여 자신의 블로그 및 포트폴리오를 구축하고 싶으시다면, 이 프로젝트를 포크하여 사용하셔도 됩니다.
 
 ## 주요 기능
+
 - 📝 마크다운 기반의 블로그 포스팅
 - 🏷️ 카테고리 및 태그 시스템
 - 🖼️ 포트폴리오 프로젝트 쇼케이스
@@ -13,8 +19,42 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
 - 🔍 풀텍스트 검색 기능
 - 📱 반응형 디자인(OS Concept의 디자인)
 
-## 기술 스택
-이 프로젝트는 다음 기술 스택을 사용하여 개발될 예정입니다.(아래는 예시이며, 프로젝트의 요구사항에 따라 변경될 수 있습니다.)
+## OS 테마 기반 특징
+
+이 프로젝트는 운영 체제(OS) 스타일의 사용자 인터페이스를 제공하여 독특하고 몰입감 있는 사용자 경험을 제공합니다. 주요 특징은 다음과 같습니다:
+
+1. OS 스타일 UI 컴포넌트
+2. 가상 파일 시스템
+3. 애플리케이션 개념
+4. 시스템 트레이
+5. 터미널 에뮬레이터
+6. 사용자 인증
+7. 테마 및 커스터마이제이션
+8. 반응형 디자인
+9. 애니메이션 및 트랜지션
+10. 접근성
+11. SEO 최적화
+12. 성능 최적화
+13. 오프라인 지원
+14. 데이터 시각화
+15. 다국어 지원
+
+<details>
+<summary>URL 구조</summary>
+
+각 "앱"의 URL은 실제 OS의 애플리케이션처럼 구성되어 있습니다:
+
+- 홈: yourdomain.com
+- 블로그: yourdomain.com/apps/blog
+- 포트폴리오: yourdomain.com/apps/portfolio
+- 설정: yourdomain.com/apps/settings
+- 터미널: yourdomain.com/apps/terminal
+
+이러한 구조를 통해 사용자에게 실제 OS를 사용하는 듯한 경험을 제공합니다.
+</details>
+
+<details>
+<summary>기술 스택</summary>
 
 ### 프레임워크 및 라이브러리
 - **Node.js**: 서버 사이드 JavaScript 런타임
@@ -29,6 +69,11 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
 ### 상태 관리 및 데이터 페칭
 - **Zustand**: React 전역 상태 관리 라이브러리
 - **SWR**: 데이터 페칭 및 캐싱을 위한 React Hooks 라이브러리
+- **React Hook Form**: 폼 상태 관리 라이브러리
+
+### 데이터 fetching
+- **ky**: 가벼운 브라우저용 HTTP 클라이언트
+- **got**: 강력한 Node.js용 HTTP 클라이언트
 
 ### 데이터베이스
 - **MongoDB**: 문서 지향 NoSQL 데이터베이스
@@ -44,44 +89,54 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
 - **Jest**: JavaScript 테스팅 프레임워크
 - **React Testing Library**: React 컴포넌트 테스팅 라이브러리
 
+### 유틸리티
+- **date-fns**: 날짜 조작 및 포맷팅 라이브러리
+
+### 개발 도구
+- **Storybook**: UI 컴포넌트 개발 및 테스트 환경
+
 ### 배포
 - **Vercel**: Next.js 애플리케이션 호스팅 및 배포 플랫폼
 
-### 추가 라이브러리 및 기술
-#### UI/UX 향상
+</details>
+
+<details>
+<summary>추가(할) 라이브러리 및 기술</summary>
+
+### UI/UX 향상
 - **@radix-ui/react-tooltip**: 접근성 높은 툴팁 컴포넌트 라이브러리
 - **next-themes**: Next.js용 테마 관리 라이브러리
 
-#### 코드 구문 강조
+### 코드 구문 강조
 - **prism-react-renderer**: React에 최적화된 구문 강조 라이브러리
 
-#### 개발 도구
+### 개발 도구
 - **ESLint**: 코드 품질 관리
 - **Prettier**: 코드 포맷팅
 - **Husky**: Git hooks 관리
 - **lint-staged**: 스테이징된 파일에 대한 린팅
 
-#### 분석 및 모니터링
+### 분석 및 모니터링
 - **Google Analytics**: 웹사이트 분석
 
-#### 소셜 기능
+### 소셜 기능
 - **utterances**: GitHub 이슈 기반 댓글 시스템
 
-#### 보안
+### 보안
 - **helmet**: Express 앱을 위한 보안 HTTP 헤더 설정
 - **csurf**: CSRF 보호 미들웨어
 
-#### 성능 최적화
+### 성능 최적화
 - **compression**: Node.js 압축 미들웨어
 - **next-pwa**: Progressive Web App (PWA) 지원
 
-#### 문서화
+### 문서화
 - **Swagger-UI-Express**: API 문서화
 
-이 기술 및 라이브러리들은 프로젝트의 요구사항과 규모에 따라 선택적으로 도입할 예정입니다. 각 도구의 장단점을 고려하여 프로젝트에 가장 적합한 솔루션을 선택할 것입니다.
+</details>
 
-
-## 시작하기
+<details>
+<summary>시작하기</summary>
 
 ### 필수 조건
 
@@ -114,8 +169,8 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
    `.env.local` 파일을 열고 필요한 환경 변수를 설정합니다.
 
 5. 데이터베이스 설정:
-    - MongoDB: `MONGODB_URI` 환경 변수에 연결 문자열을 설정합니다.
-    - PostgreSQL: `POSTGRES_URL` 환경 변수에 연결 정보를 설정합니다.
+   - MongoDB: `MONGODB_URI` 환경 변수에 연결 문자열을 설정합니다.
+   - PostgreSQL: `POSTGRES_URL` 환경 변수에 연결 정보를 설정합니다.
 
 6. 개발 서버를 실행합니다:
    ```
@@ -123,8 +178,10 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
    ```
 
 이제 브라우저에서 `http://localhost:3000`으로 접속하여 애플리케이션을 확인할 수 있습니다.
+</details>
 
-## 배포
+<details>
+<summary>배포</summary>
 
 이 프로젝트는 Vercel에 배포하도록 설정되어 있습니다.
 
@@ -134,8 +191,10 @@ OS 특히 Ubuntu의 디자인을 차용하여 디자인을 구성하였습니다
 4. 배포 설정을 검토하고 "Deploy" 버튼을 클릭합니다.
 
 main 브랜치에 push하면 자동으로 배포가 진행됩니다.
+</details>
 
-## 기여하기
+<details>
+<summary>기여하기</summary>
 
 프로젝트에 기여하고 싶으시다면 다음 단계를 따라주세요:
 
@@ -169,6 +228,7 @@ footer (optional)
 - footer: 관련 이슈 번호 (선택사항)
 
 예: `feat: Add dark mode toggle button`
+</details>
 
 ## 라이선스
 
