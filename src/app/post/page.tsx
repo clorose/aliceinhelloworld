@@ -1,0 +1,8 @@
+export default function PostPage() {
+  return (
+    <>
+      <h1>Post</h1>
+      <p>Welcome to the Post page</p>
+    </>
+  );
+}
