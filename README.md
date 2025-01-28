@@ -76,7 +76,7 @@ Next.js와 React 기반 OS 스타일 블로그
 깃 커밋 메세지는 아래의 규칙을 따른다. (깃모지와 Type을 함께 사용)
 
 ```
-🔥 [Type] : title
+🔥 Type : title
 
 [Description]
 
@@ -84,6 +84,7 @@ Next.js와 React 기반 OS 스타일 블로그
 ```
 
 ### 커밋 메시지 규칙
+타입의 첫 글자는 대문자로 작성한다.
 - **feat**: 새로운 기능 추가 `feat: Add search functionality to header`
 - **fix**: 버그 수정 `fix: Fix infinite loop in pagination`
 - **docs**: 문서 수정 `docs: Update README with commit guidelines`
