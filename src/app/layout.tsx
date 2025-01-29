@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "../styles/reset.css";
 import "./globals.css";
+import { BlogHeader } from "@/components/layout/Header";
 
 export const metadata: Metadata = {
   title: "Alice in Helloworld",
@@ -15,7 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <BlogHeader
+          frontmatter={{ title: "Sample Title", date: "2023-10-01" }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
