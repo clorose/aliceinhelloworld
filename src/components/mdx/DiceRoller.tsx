@@ -1,4 +1,4 @@
-// components/DiceRoller.tsx
+// path: ~/Develop/aliceinhelloworld/src/components/DiceRoller.tsx
 "use client";
 import { useState } from "react";
 
