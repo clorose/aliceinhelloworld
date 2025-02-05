@@ -1,4 +1,4 @@
-// components/Counter.tsx
+// path: ~/Develop/aliceinhelloworld/src/components/Counter.tsx
 "use client";
 import { useState } from "react";
 

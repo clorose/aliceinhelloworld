@@ -1,8 +1,7 @@
-// path: ~/Develop/aliceinhelloworld/src/app/layout.tsx
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import "../styles/reset.css";
 import "./globals.css";
-import { BlogHeader } from "@/components/layout/Header";
+import { TopBar } from "@/components/layout/TopBar";
 
 export const metadata: Metadata = {
   title: "Alice in Helloworld",
@@ -16,10 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>
-        <BlogHeader
-          frontmatter={{ title: "Sample Title", date: "2023-10-01" }}
-        />
+      <body className="flex flex-col h-screen">
+        {/* TopBar - OS 스타일의 상단 메뉴바 */}
+        <TopBar />
+
         {children}
       </body>
     </html>
