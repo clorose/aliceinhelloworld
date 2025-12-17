@@ -41,8 +41,112 @@ macOS/Windows 스타일의 데스크탑 환경에서 여러 앱을 실행하는 
 - **Data Fetching**: TanStack Query
 
 ## 폴더 구조
+<details>
+<summary>📸 구조도 이미지</summary>
 
 ![folder](./folder.png)
+
+</details>
+
+<details>
+<summary>📁 상세 트리 구조</summary>
+
+```zsh
+📦 aliceinhelloworld/
+├── 📂 app/
+│   ├── 📘 layout.tsx              # ROOT (전역 CSS, Providers)
+│   ├── 🎨 globals.css             # Tailwind imports
+│   │
+│   ├── 📂 (os)/                   # OS UI
+│   │   ├── 📘 layout.tsx          # 상단바, 독, 배경
+│   │   └── 📘 page.tsx            # 데스크탑 화면
+│   │
+│   ├── 📂 apps/                   # OS 앱들
+│   │   ├── 📂 blog/
+│   │   │   ├── 📘 page.tsx                    # 블로그 메인
+│   │   │   ├── 📂 post/
+│   │   │   │   └── 📂 [slug]/
+│   │   │   │       └── 📘 page.tsx            # 포스트
+│   │   │   └── 📂 category/
+│   │   │       └── 📂 [category]/
+│   │   │           └── 📘 page.tsx            # 카테고리
+│   │   ├── 📂 terminal/
+│   │   │   └── 📘 page.tsx
+│   │   └── 📂 settings/
+│   │       └── 📘 page.tsx
+│   │
+│   └── 📂 sites/                  # TRPG 가짜 사이트
+│       └── 📂 [siteId]/
+│           ├── 📘 layout.tsx      # 사이트별 레이아웃
+│           ├── 📘 page.tsx        # 사이트 페이지
+│           └── 🎨 page.module.scss
+│
+├── 📂 content/                    # MDX 콘텐츠
+│   └── 📂 blog/
+│       ├── 📂 ai/
+│       │   ├── 📝 intro-to-llm.mdx
+│       │   └── 📝 prompt-engineering.mdx
+│       ├── 📂 trpg/
+│       │   ├── 📝 coc-scenario.mdx
+│       │   └── 📝 character-sheet.mdx
+│       └── 📂 dev/
+│           ├── 📝 next-app-router.mdx
+│           └── 📝 react-patterns.mdx
+│
+├── 📂 components/
+│   ├── 📂 os/                     # OS UI 컴포넌트
+│   │   ├── ⚛️ Window.tsx
+│   │   ├── ⚛️ Dock.tsx
+│   │   ├── ⚛️ MenuBar.tsx
+│   │   ├── ⚛️ Desktop.tsx
+│   │   └── ⚛️ AppIcon.tsx
+│   ├── 📂 ui/                     # Radix UI 래핑
+│   │   ├── ⚛️ dialog.tsx
+│   │   ├── ⚛️ popover.tsx
+│   │   └── ⚛️ context-menu.tsx
+│   ├── 📂 mdx/                    # MDX 컴포넌트
+│   │   ├── ⚛️ CodeBlock.tsx
+│   │   └── ⚛️ Callout.tsx
+│   └── ⚛️ Providers.tsx           # Theme, Query 등
+│
+├── 📂 lib/
+│   ├── 📂 mdx/                    # MDX 유틸
+│   │   ├── 📄 getMDXFiles.ts
+│   │   ├── 📄 parseMDX.ts
+│   │   └── 📄 rehype-plugins.ts
+│   ├── 📂 stores/                 # Zustand
+│   │   ├── 📄 useOSStore.ts
+│   │   └── 📄 useGameStore.ts
+│   └── 📂 utils/
+│       ├── 📄 cn.ts
+│       └── 📄 date.ts
+│
+├── 📂 styles/
+│   └── 📂 fake-sites/
+│       ├── 🎨 _variables.scss
+│       ├── 🎨 _mixins.scss
+│       └── 📂 themes/             # 사이트별 테마
+│           ├── 🎨 bbs-1990s.scss
+│           ├── 🎨 portal-2000s.scss
+│           └── 🎨 detective.scss
+│
+├── 📂 public/
+│   ├── 📂 icons/                  # 앱 아이콘
+│   ├── 📂 fonts/
+│   │   ├── 📂 retro/
+│   │   └── 📂 modern/
+│   └── 📂 images/
+│       └── 📂 wallpapers/
+│
+├── 📂 types/
+│   ├── 📄 os.ts
+│   ├── 📄 game.ts
+│   └── 📄 mdx.d.ts
+│
+└── ⚙️ mdx-components.tsx          # MDX 설정
+```
+
+</details>
 
 ## 설치 및 실행
 
