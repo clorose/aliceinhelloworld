@@ -1,20 +1,43 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { z } from 'zod';
+import readingTime from 'reading-time';
 
 const contentDirectory = path.join(process.cwd(), 'content/blog');
+
+// Zod schema for frontmatter validation
+const FrontmatterSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid date format',
+  }),
+  description: z.string().min(1, 'Description is required'),
+  tags: z.array(z.string()).optional(),
+}).passthrough(); // Allow additional fields
+
+export interface BlogPostFrontmatter {
+  title: string;
+  date: string;
+  description: string;
+  tags?: string[];
+  [key: string]: unknown;
+}
 
 export interface BlogPost {
   id: string; // unique ID based on path
   slug: string;
   path: string[]; // ['ai', 'agents']
-  frontmatter: {
-    title: string;
-    date: string;
-    description: string;
-    tags?: string[];
-    [key: string]: any;
-  };
+  frontmatter: BlogPostFrontmatter;
+  readingTime: string; // e.g., "5 min read"
+}
+
+export interface TreeNode {
+  type: 'folder' | 'file';
+  name: string;
+  fullPath: string; // 'ai/img/comfyui'
+  children?: TreeNode[];
+  post?: BlogPost; // only for type === 'file'
 }
 
 // Recursively get all MDX files
@@ -51,14 +74,30 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const { data, content } = matter(fileContent);
+      const stats = readingTime(content);
+
+      // Validate frontmatter with Zod
+      let frontmatter: BlogPostFrontmatter;
+      try {
+        frontmatter = FrontmatterSchema.parse(data);
+      } catch (error) {
+        console.error(`Invalid frontmatter in ${relativePath}:`, error);
+        // Provide defaults for invalid frontmatter
+        frontmatter = {
+          title: data.title || 'Untitled',
+          date: data.date || new Date().toISOString(),
+          description: data.description || 'No description',
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          ...data,
+        };
+      }
+
       return {
         id: relativePath.replace(/\.mdx$/, ''),
         slug: pathParts[pathParts.length - 1],
         path: pathParts.slice(0, -1), // everything except filename is directory path
-        frontmatter: {
-          ...data,
-          tags: data.tags || [],
-        } as any,
+        frontmatter,
+        readingTime: stats.text, // e.g., "5 min read"
       };
     })
   );
