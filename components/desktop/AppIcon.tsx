@@ -13,7 +13,8 @@ export function AppIcon({ title, icon, onClick }: AppIconProps) {
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col items-center gap-2 p-2 w-24 rounded-lg hover:bg-white/10 transition-colors focus:outline-none focus:bg-white/15"
+      className="group flex flex-col items-center gap-2 p-2 w-24 rounded-lg hover:bg-white/10 transition-colors focus:outline-none focus:bg-white/15 focus:ring-2 focus:ring-white/30"
+      aria-label={`Open ${title}`}
     >
       <motion.div
         whileHover={{ scale: 1.1 }}
