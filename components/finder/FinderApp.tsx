@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { BlogPost } from "@/lib/posts";
 import { Sidebar } from "./Sidebar";
 import { PostList } from "./PostList";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 
 interface FinderAppProps {
   posts: BlogPost[];
@@ -13,11 +13,18 @@ interface FinderAppProps {
   onOpenPost: (post: BlogPost) => void;
 }
 
-export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }: FinderAppProps) {
+export function FinderApp({
+  posts,
+  initialPath = [],
+  rootPath = [],
+  onOpenPost,
+}: FinderAppProps) {
   // State
   const [currentPath, setCurrentPath] = useState<string[]>(initialPath);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Persisted search state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Derived State
   const filteredPosts = useMemo(() => {
@@ -25,36 +32,43 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
 
     // 0. Base Filter by Root Path
     if (rootPath.length > 0) {
-      const rootPathStr = rootPath.join('/');
-      result = result.filter(p => p.path.join('/').startsWith(rootPathStr));
+      const rootPathStr = rootPath.join("/");
+      result = result.filter((p) => p.path.join("/").startsWith(rootPathStr));
     }
 
     // 1. Filter by Path (if not in Tag mode or Root)
-    // If in root (empty path), show all? Spec says "Scan subfolders... When a folder is clicked, show that folder's post list"
-    // So if I am in 'ai', I show posts inside 'ai' (and maybe 'ai/sub'?). Finder usually shows items in immediate folder.
-    // recursing? Let's assume inclusive of subfolders for this blog UX? 
-    // "Mirrors the on-disk structure". 
-    // Let's do exact match or recursive? Flattened usually feels better for blog. 
-    // Let's do: If path is empty, show all. If path is set, show posts that start with that path.
     if (!tagFilter) {
       if (currentPath.length > 0) {
-        const pathStr = currentPath.join('/');
-        result = result.filter(p => p.path.join('/').startsWith(pathStr));
+        const pathStr = currentPath.join("/");
+        result = result.filter((p) => p.path.join("/").startsWith(pathStr));
       }
     } else {
-      // Tag Mode: Ignore path, show all with tag? Or refine current path?
-      // Spec: "navigate to a post list filtered by that tag". Usually implies global filter.
-      result = result.filter(p => p.frontmatter.tags?.includes(tagFilter));
+      // Tag Mode: show all with tag
+      result = result.filter((p) => p.frontmatter.tags?.includes(tagFilter));
     }
 
     return result;
   }, [posts, currentPath, tagFilter, rootPath]);
+
+  // Convert to relative paths (remove rootPath from beginning)
+  // IMPORTANT: Keep original post.id unchanged because PostReader uses it to find MDX content in POST_MAP
+  const postsWithRelativePaths = useMemo(() => {
+    if (rootPath.length === 0) return filteredPosts;
+
+    return filteredPosts.map((post) => ({
+      ...post,
+      path: post.path.slice(rootPath.length), // Remove rootPath prefix for tree display
+      // DO NOT change id - it's used by POST_MAP to find MDX content
+    }));
+  }, [filteredPosts, rootPath]);
 
   // Handlers
   const handleNavigate = (path: string[]) => {
     setCurrentPath(path);
     setTagFilter(null); // Clear tag filter when navigating folders
     setSelectedPostId(null);
+    setIsSidebarOpen(false);
+    // Keep search term persisted across navigation
   };
 
   const handleSelectPost = (post: BlogPost) => {
@@ -66,7 +80,8 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
     onOpenPost(post);
   };
 
-  const handleTagClick = (tag: string) => {
+  // Reserved for future use
+  const _handleTagClick = (tag: string) => {
     setTagFilter(tag);
     setSelectedPostId(null); // Clear selection in new list
   };
@@ -76,25 +91,44 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
       {/* Toolbar */}
       <div className="h-10 border-b border-zinc-200 dark:border-zinc-800 flex items-center px-4 gap-4 bg-zinc-50 dark:bg-zinc-900 select-none">
         <div className="flex items-center gap-1">
+          {/* Mobile Sidebar Toggle */}
+          <button
+            className="md:hidden p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
+
           {/* Navigation buttons placeholder */}
-          <button className="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-30 text-zinc-400" disabled>
+          <button
+            className="hidden md:block p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-30 text-zinc-400"
+            disabled
+          >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button className="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-30 text-zinc-400" disabled>
+          <button
+            className="hidden md:block p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-30 text-zinc-400"
+            disabled
+          >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
-          <span className="cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-200" onClick={() => handleNavigate(rootPath)}>Home</span>
+        <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 flex items-center gap-2 overflow-hidden">
+          <span
+            className="cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-200 shrink-0"
+            onClick={() => handleNavigate(rootPath)}
+          >
+            Home
+          </span>
           {currentPath.map((part, i) => (
             <React.Fragment key={i}>
               {/* Only show breadcrumbs if they are deeper than root */}
-              {(i >= rootPath.length) && (
+              {i >= rootPath.length && (
                 <>
-                  <ChevronRight className="w-3 h-3 text-zinc-400" />
+                  <ChevronRight className="w-3 h-3 text-zinc-400 shrink-0" />
                   <span
-                    className="cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-200 capitalize"
+                    className="cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-200 capitalize truncate"
                     onClick={() => handleNavigate(currentPath.slice(0, i + 1))}
                   >
                     {part}
@@ -105,8 +139,8 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
           ))}
           {tagFilter && (
             <>
-              <ChevronRight className="w-3 h-3 text-zinc-400" />
-              <span className="px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded text-xs">
+              <ChevronRight className="w-3 h-3 text-zinc-400 shrink-0" />
+              <span className="px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded text-xs shrink-0">
                 #{tagFilter}
               </span>
             </>
@@ -115,10 +149,13 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
       </div>
 
       {/* Main Content Split */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - Hidden in Reader mode on small screens? Or always visible? Finder keeps sidebar. */}
-        {/* For Reader Mode, user might want more space. Let's keep sidebar unless mobile. */}
-        <div className="hidden md:flex h-full">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Sidebar */}
+        <div
+          className={`absolute inset-y-0 left-0 z-20 bg-zinc-50 dark:bg-zinc-900 h-full border-r border-zinc-200 dark:border-zinc-800 transition-transform duration-200 ease-in-out md:relative md:translate-x-0 ${
+            isSidebarOpen ? "translate-x-0 shadow-xl" : "-translate-x-full"
+          }`}
+        >
           <Sidebar
             posts={posts}
             currentPath={currentPath}
@@ -128,13 +165,25 @@ export function FinderApp({ posts, initialPath = [], rootPath = [], onOpenPost }
           />
         </div>
 
+        {/* Overlay for mobile sidebar */}
+        {isSidebarOpen && (
+          <div
+            className="absolute inset-0 z-10 bg-black/20 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* Right Panel */}
-        <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950">
+        <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950 overflow-hidden">
           <PostList
-            posts={filteredPosts}
+            posts={postsWithRelativePaths}
             onSelect={handleSelectPost}
             onOpen={handleOpenPost}
             selectedPostId={selectedPostId}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            currentPath={currentPath}
+            rootPath={rootPath}
           />
         </div>
       </div>
