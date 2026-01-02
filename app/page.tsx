@@ -1,12 +1,8 @@
-import { Desktop } from "@/components/desktop/Desktop";
 import { getAllPosts } from "@/lib/posts";
+import { BlogHome } from "@/components/blog/BlogHome";
 
 export default async function Home() {
   const posts = await getAllPosts();
 
-  return (
-    <main>
-      <Desktop posts={posts} />
-    </main>
-  );
+  return <BlogHome posts={posts} />;
 }

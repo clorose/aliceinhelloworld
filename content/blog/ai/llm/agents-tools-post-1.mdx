@@ -1,0 +1,31 @@
+---
+title: "LLM 에이전트에 도구 연결하기: Function Calling 실전"
+date: "2025-12-14"
+description: "OpenAI Function Calling을 활용해 LLM 에이전트가 외부 도구를 사용하도록 만드는 방법."
+tags: ["LLM", "Agent", "Function Calling", "OpenAI"]
+---
+
+## Function Calling이란?
+
+LLM이 필요한 함수를 호출하도록 하는 기능.
+
+```python
+functions = [{
+    "name": "get_weather",
+    "description": "Get the current weather",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "location": {"type": "string"},
+        },
+        "required": ["location"]
+    }
+}]
+```
+
+## 실전 패턴
+
+1. 함수 정의
+2. LLM에게 제공
+3. LLM이 함수 호출 요청
+4. 실제 실행 후 결과 반환

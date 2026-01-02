@@ -1,0 +1,193 @@
+---
+title: "React Hooks 패턴: useCallback vs useMemo 제대로 사용하기"
+date: "2025-12-17"
+description: "useCallback과 useMemo의 차이를 이해하고 실전에서 효과적으로 활용하는 방법."
+tags: ["React", "Hooks", "Performance", "useMemo", "useCallback"]
+---
+
+## useCallback vs useMemo 차이점
+
+### useCallback: 함수를 메모이제이션
+
+`useCallback`은 **함수 자체**를 메모이제이션합니다:
+
+```jsx
+import { useCallback, useState } from 'react';
+
+function TodoList() {
+  const [todos, setTodos] = useState([]);
+
+  // 의존성 배열이 변경되지 않으면 같은 함수 참조 유지
+  const handleClick = useCallback(() => {
+    console.log('Current todos:', todos);
+  }, [todos]);
+
+  // 자식 컴포넌트에 전달
+  return <TodoItem onClick={handleClick} />;
+}
+```
+
+### useMemo: 값을 메모이제이션
+
+`useMemo`는 **계산 결과**를 메모이제이션합니다:
+
+```jsx
+function FilteredList({ items, filterText }) {
+  // 필터링 결과를 캐싱 - filterText나 items가 변경될 때만 재계산
+  const filteredItems = useMemo(() => {
+    console.log('Filtering items...');
+    return items.filter(item =>
+      item.name.toLowerCase().includes(filterText.toLowerCase())
+    );
+  }, [items, filterText]);
+
+  return (
+    <ul>
+      {filteredItems.map(item => <li key={item.id}>{item.name}</li>)}
+    </ul>
+  );
+}
+```
+
+## 실전 예제: 검색 필터링
+
+```typescript
+import { useState, useMemo, useCallback } from 'react';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+}
+
+function ProductSearch({ products }: { products: Product[] }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // 1. 필터링 로직 - useMemo로 최적화
+  const filteredProducts = useMemo(() => {
+    console.log('🔍 Filtering products...');
+
+    return products.filter(product => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === 'all' || product.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, selectedCategory]);
+
+  // 2. 이벤트 핸들러 - useCallback으로 최적화
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleCategoryChange = useCallback((category: string) => {
+    setSelectedCategory(category);
+  }, []);
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        placeholder="Search products..."
+      />
+
+      <CategoryFilter
+        onSelect={handleCategoryChange}
+        selected={selectedCategory}
+      />
+
+      <ProductList products={filteredProducts} />
+    </div>
+  );
+}
+```
+
+## 과도한 최적화 피하기
+
+❌ **불필요한 경우:**
+
+```jsx
+// 매번 재생성되어도 성능에 영향 없음
+function SimpleButton() {
+  const [count, setCount] = useState(0);
+
+  // 불필요한 useCallback
+  const handleClick = useCallback(() => {
+    setCount(c => c + 1);
+  }, []);
+
+  return <button onClick={handleClick}>Click me</button>;
+}
+```
+
+✅ **필요한 경우:**
+
+```jsx
+// 자식 컴포넌트가 React.memo로 최적화되어 있을 때
+const MemoizedChild = React.memo(({ onClick }) => {
+  console.log('Child rendered');
+  return <button onClick={onClick}>Click</button>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  // useCallback 없으면 매번 재렌더링
+  const handleClick = useCallback(() => {
+    console.log('Clicked!');
+  }, []);
+
+  return (
+    <>
+      <MemoizedChild onClick={handleClick} />
+      <button onClick={() => setCount(count + 1)}>Count: {count}</button>
+    </>
+  );
+}
+```
+
+## 성능 측정하기
+
+```javascript
+import { useMemo, useCallback } from 'react';
+
+function ExpensiveComponent({ data }) {
+  // 성능 측정
+  const result = useMemo(() => {
+    console.time('Expensive calculation');
+
+    const value = data.reduce((acc, item) => {
+      return acc + complexCalculation(item);
+    }, 0);
+
+    console.timeEnd('Expensive calculation');
+    return value;
+  }, [data]);
+
+  return <div>Result: {result}</div>;
+}
+```
+
+## 언제 사용해야 할까?
+
+### useCallback 사용 시점:
+- React.memo로 최적화된 자식 컴포넌트에 props로 전달하는 함수
+- useEffect의 의존성 배열에 들어가는 함수
+- 커스텀 훅에서 반환하는 함수
+
+### useMemo 사용 시점:
+- 비용이 큰 계산 (필터링, 정렬, 변환 등)
+- 참조 동등성이 중요한 객체/배열
+- 렌더링마다 재생성되면 안 되는 값
+
+### 사용하지 말아야 할 때:
+- 간단한 계산 (오히려 메모이제이션 오버헤드가 더 큼)
+- 의존성 배열이 매번 변경되는 경우
+- 성능 문제가 실제로 발생하지 않은 경우

@@ -1,0 +1,38 @@
+---
+title: "ComfyUI 커스텀 노드 만들기: 기초부터 배포까지"
+date: "2025-12-20"
+description: "ComfyUI에서 나만의 커스텀 노드를 만들고 공유하는 방법을 단계별로 알아봅니다."
+tags: ["ComfyUI", "Custom Node", "Python", "AI"]
+---
+
+## 커스텀 노드가 필요한 이유
+
+ComfyUI의 기본 노드만으로도 강력하지만, 특정 워크플로우를 자동화하거나 반복 작업을 줄이고 싶을 때 커스텀 노드가 유용합니다.
+
+## 기본 구조
+
+```python
+class MyCustomNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = "custom"
+
+    def process(self, image, strength):
+        # Your processing logic here
+        return (image,)
+```
+
+## 배포 팁
+
+- GitHub에 올리고 ComfyUI Manager에 등록
+- 명확한 README 작성
+- 예제 워크플로우 JSON 포함

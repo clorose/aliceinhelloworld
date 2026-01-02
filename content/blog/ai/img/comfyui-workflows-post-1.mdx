@@ -1,0 +1,30 @@
+---
+title: "txt2img 기본 워크플로우 최적화하기"
+date: "2025-12-19"
+description: "ComfyUI에서 텍스트로 이미지를 생성하는 기본 워크플로우를 단계별로 개선합니다."
+tags: ["ComfyUI", "Workflow", "txt2img", "SDXL"]
+---
+
+## 기본 워크플로우
+
+가장 단순한 txt2img 구성:
+- Checkpoint Loader
+- CLIP Text Encode (Positive)
+- CLIP Text Encode (Negative)
+- KSampler
+- VAE Decode
+- Save Image
+
+## 개선 포인트
+
+### 1. Hires.fix 추가
+
+업스케일로 디테일 향상
+
+### 2. ControlNet 활용
+
+구도 컨트롤
+
+### 3. LoRA 스택
+
+스타일 조합
