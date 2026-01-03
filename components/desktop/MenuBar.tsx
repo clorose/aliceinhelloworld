@@ -14,17 +14,17 @@ interface MenuBarProps {
 }
 
 export function MenuBar({ onTerminalClick, onSearchClick, isTerminalOpen }: MenuBarProps) {
-  const [time, setTime] = useState<Date>(new Date());
+  const [time, setTime] = useState<Date | null>(null); // null until mounted to avoid hydration mismatch
   const { toggleShowDesktop, toggleMissionControl, showDesktop, toggleDock, dockOpen } =
     useDesktopStore();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Hydration safety pattern
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setMounted(true), []);
-
+  // Hydration safety pattern - set time only after mount
   useEffect(() => {
+    setMounted(true);
+    setTime(new Date());
+
     const interval = setInterval(() => {
       setTime(new Date());
     }, 60000);
@@ -93,14 +93,14 @@ export function MenuBar({ onTerminalClick, onSearchClick, isTerminalOpen }: Menu
           <Battery className="w-4 h-4" />
         </div>
 
-        <span className="font-medium">{format(time, "MMM d EEE HH:mm")}</span>
+        <span className="font-medium">{time ? format(time, "MMM d EEE HH:mm") : "--:--"}</span>
 
         <div className="h-4 w-[1px] bg-white/30 mx-2" />
 
         <button
           onClick={toggleTheme}
           className="hover:bg-white/20 p-1 rounded-sm transition-colors"
-          title={`Theme: ${theme} (${isDark ? 'Dark' : 'Light'})`}
+          title={mounted ? `Theme: ${theme} (${isDark ? 'Dark' : 'Light'})` : "Theme"}
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
